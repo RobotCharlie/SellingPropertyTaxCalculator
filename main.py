@@ -1,7 +1,5 @@
-# This is a sample Python script.
+import sys
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 # Constants
 CAPITAL_GAIN_RATE = 0.5  # 50% of the capital gain will be taxed
@@ -13,28 +11,22 @@ def calculate_yearly_income_tax(income):
     :param income: total income
     :return: tax
     """
+
+    print('Calculating yearly income tax..')
     tax = 0
-    total_income = income
     rest_income = income
+    income_taxed_portions = [48_535, 48_535, 53_404, 63_895, sys.float_info.max]
+    income_portion_tax_rates = [0.15, 0.205, 0.26, 0.29, 0.33]
 
-    if rest_income > 48_535:
-        tax += (48_535 * 0.15)
-        rest_income -= 48_535
-    if rest_income > 48_535:
-        tax += (48_535 * 0.205)
-        rest_income -= 48_535
-    if rest_income > 53_404:
-        tax += (53_404 * 0.26)
-        rest_income -= 53_404
-    if rest_income > 64_895:
-        tax += (64_895 * 0.29)
-        rest_income -= 64_895
-    if rest_income > 64_895:
-        tax += (64_895 * 0.29)
-        rest_income -= 64_895
-    if total_income > 214_368:
-        tax += ((total_income - 214_368) * 0.33)
-
+    for index, portion in enumerate(income_taxed_portions):
+        actual_taxable_portion = rest_income if 0 < rest_income < portion else portion
+        tax += actual_taxable_portion * income_portion_tax_rates[index]
+        rest_income = (rest_income - portion) if rest_income > portion else 0
+        print(f'For the next portion: CAD {portion}, you have taxable income: CAD {actual_taxable_portion}, '
+              f'need to pay tax amount: CAD {actual_taxable_portion * income_portion_tax_rates[index]} = ({actual_taxable_portion} * {income_portion_tax_rates[index]}), '
+              f'now total tax to pay is CAD {tax}, you still have payable income amount CAD: {rest_income}')
+        if rest_income <= 0:
+            break  # no need to calculate next portion
     return tax
 
 
@@ -66,5 +58,6 @@ def calculate_selling_property_tax():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    total_selling_property_tax = calculate_selling_property_tax()
     print('Your total tax to pay is..')
-    print('CAD', calculate_selling_property_tax())
+    print('CAD', total_selling_property_tax)
